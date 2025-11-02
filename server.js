@@ -7,12 +7,12 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 // ---------------------------
-// CORS: permitir frontend de Vercel y localhost
+// CORS: permitir frontend de Vercel (y localhost)
 // ---------------------------
 const corsOptions = {
   origin: (origin, callback) => {
     const whitelist = [
-      process.env.FRONTEND_URL, // URL de tu .env
+      process.env.FRONTEND_URL, // URL en .env
       'http://localhost:5173'
     ];
     const vercelRegex = /^https:\/\/efi-sistema-gestion-frontent.*\.vercel\.app$/;
@@ -20,24 +20,24 @@ const corsOptions = {
     if (!origin || whitelist.includes(origin) || vercelRegex.test(origin)) {
       callback(null, true);
     } else {
+      console.log('CORS bloqueado para:', origin);
       callback(new Error('No permitido por CORS'));
     }
   },
-  methods: ['GET','POST','PUT','DELETE','OPTIONS'],
-  allowedHeaders: ['Content-Type','Authorization']
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 };
 
-app.use(cors(corsOptions)); // usa la configuración segura
+// Aplicar CORS correctamente
+app.use(cors(corsOptions));
 
 // ---------------------------
 // Middlewares
 // ---------------------------
 app.use(express.json());
 
-// ---------------------------
 // Logging simple de requests
-// ---------------------------
-app.use((req,res,next) => {
+app.use((req, res, next) => {
   console.log(`${req.method} ${req.url}`);
   next();
 });
@@ -45,11 +45,17 @@ app.use((req,res,next) => {
 // ---------------------------
 // Rutas
 // ---------------------------
-app.use('/auth', require('./routes/auth.routes'));
-app.use('/users', require('./routes/users.routes'));
-app.use('/projects', require('./routes/projects.routes'));
-app.use('/tasks', require('./routes/tasks.routes'));
-app.use('/resources', require('./routes/resources.routes'));
+const authRouter = require('./routes/auth.routes');
+const usersRouter = require('./routes/users.routes');
+const projectsRouter = require('./routes/projects.routes');
+const tasksRouter = require('./routes/tasks.routes');
+const resourcesRouter = require('./routes/resources.routes');
+
+app.use('/auth', authRouter);
+app.use('/users', usersRouter);
+app.use('/projects', projectsRouter);
+app.use('/tasks', tasksRouter);
+app.use('/resources', resourcesRouter);
 
 // ---------------------------
 // Servidor
