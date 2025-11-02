@@ -3,42 +3,41 @@ const express = require('express');
 const cors = require('cors');
 const app = express();
 
-// Puerto de Railway o local
+// Puerto de Railway o 3000 local
 const port = process.env.PORT || 3000;
 
 // ---------------------------
-// CORS configurado correctamente
+// CORS: permitir frontend de Vercel y localhost
 // ---------------------------
-const allowedOrigins = [
-  process.env.FRONTEND_URL, // URL de tu .env
-  'http://localhost:5173'    // desarrollo local
-];
-
 const corsOptions = {
   origin: (origin, callback) => {
-    if (!origin) return callback(null, true); // Postman o servidor sin origen
-    // Regex para cualquier deploy de Vercel que empiece igual
+    const whitelist = [
+      process.env.FRONTEND_URL, // URL de tu .env
+      'http://localhost:5173'
+    ];
     const vercelRegex = /^https:\/\/efi-sistema-gestion-frontent.*\.vercel\.app$/;
-    if (allowedOrigins.includes(origin) || vercelRegex.test(origin)) {
+
+    if (!origin || whitelist.includes(origin) || vercelRegex.test(origin)) {
       callback(null, true);
     } else {
       callback(new Error('No permitido por CORS'));
     }
   },
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  methods: ['GET','POST','PUT','DELETE','OPTIONS'],
+  allowedHeaders: ['Content-Type','Authorization']
 };
 
-app.use(cors(corsOptions));
-app.options('*', cors(corsOptions)); // permite preflight OPTIONS
+app.use(cors(corsOptions)); // usa la configuración segura
 
 // ---------------------------
 // Middlewares
 // ---------------------------
 app.use(express.json());
 
-// Logging simple
-app.use((req, res, next) => {
+// ---------------------------
+// Logging simple de requests
+// ---------------------------
+app.use((req,res,next) => {
   console.log(`${req.method} ${req.url}`);
   next();
 });
