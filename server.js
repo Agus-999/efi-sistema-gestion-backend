@@ -7,12 +7,26 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 // ---------------------------
-// CORS: permitir frontend de Vercel
+// CORS: permitir frontend de Vercel (todos los deploys que empiecen igual)
 // ---------------------------
 const corsOptions = {
-  origin: process.env.FRONTEND_URL || 'https://efi-sistema-gestion-frontent.vercel.app', 
+  origin: (origin, callback) => {
+    // Lista blanca: acepta localhost y cualquier deploy de Vercel que empiece igual
+    const whitelist = [
+      process.env.FRONTEND_URL, // tu URL en .env
+      'http://localhost:5173'
+    ];
+    // Regex para deploys de Vercel
+    const vercelRegex = /^https:\/\/efi-sistema-gestion-frontent.*\.vercel\.app$/;
+
+    if (!origin || whitelist.includes(origin) || vercelRegex.test(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('No permitido por CORS'));
+    }
+  },
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 };
 app.use(cors(corsOptions));
 
