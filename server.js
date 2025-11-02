@@ -7,20 +7,21 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 // ---------------------------
-// CORS: permitir frontend de Vercel (todos los deploys que empiecen igual)
+// CORS: permitir frontend de Vercel (producción y previews) y localhost
 // ---------------------------
 const corsOptions = {
   origin: (origin, callback) => {
-    // Lista blanca: acepta localhost y cualquier deploy de Vercel que empiece igual
+    // Lista blanca: acepta localhost y la URL principal en .env
     const whitelist = [
-      process.env.FRONTEND_URL, // tu URL en .env
-      'http://localhost:5173'
+      process.env.FRONTEND_URL, // URL en producción
+      'http://localhost:5173'    // desarrollo local
     ];
-    // Regex para deploys de Vercel
+
+    // Regex para deploys de preview de Vercel
     const vercelRegex = /^https:\/\/efi-sistema-gestion-frontent.*\.vercel\.app$/;
 
     if (!origin || whitelist.includes(origin) || vercelRegex.test(origin)) {
-      callback(null, true);
+      callback(null, true); // permitido
     } else {
       callback(new Error('No permitido por CORS'));
     }
@@ -28,7 +29,7 @@ const corsOptions = {
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 };
-app.use(cors()); // permite cualquier origen
+app.use(cors(corsOptions)); // usa la configuración de CORS
 
 // ---------------------------
 // Middlewares
