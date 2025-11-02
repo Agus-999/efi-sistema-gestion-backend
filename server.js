@@ -3,14 +3,15 @@ const express = require('express');
 const cors = require('cors');
 const app = express();
 
-const port = process.env.PORT || 3000; // Railway asigna el puerto automáticamente
+// Railway asigna el puerto automáticamente
+const port = process.env.PORT || 3000;
 
 // ---------------------------
-// CORS: permite tu frontend
+// CORS: permite tu frontend en Vercel
 // ---------------------------
 const corsOptions = {
-  origin: 'https://efi-sistema-gestion-frontent.vercel.app', // tu URL de frontend en Vercel
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  origin: 'https://efi-sistema-gestion-frontent.vercel.app', // URL de tu frontend
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
 };
 app.use(cors(corsOptions));
@@ -38,6 +39,7 @@ app.use('/resources', resourcesRouter);
 // ---------------------------
 // Servidor
 // ---------------------------
+// Escuchar en 0.0.0.0 para conexiones externas
 app.listen(port, '0.0.0.0', () => {
   console.log(`Servidor corriendo en el puerto ${port}`);
 });
