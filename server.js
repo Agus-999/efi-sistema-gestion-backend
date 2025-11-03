@@ -37,7 +37,7 @@ const corsOptions = {
 };
 
 // Aplicar CORS correctamente
-app.use(cors(corsOptions));
+app.use(cors());
 
 // ---------------------------
 // Middlewares
