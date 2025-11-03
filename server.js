@@ -15,7 +15,7 @@ const corsOptions = {
       process.env.FRONTEND_URL, // URL en .env
       'http://localhost:5173'
     ];
-    const vercelRegex = /^https:\/\/efi-sistema-gestion-frontent.*\.vercel\.app$/;
+    const vercelRegex = /^https:\/\/(efi-sistema-gestion-frontent|efi-sistema-gestion-frontent-[a-z0-9]+)\.vercel\.app$/;
 
     if (!origin || whitelist.includes(origin) || vercelRegex.test(origin)) {
       callback(null, true);
